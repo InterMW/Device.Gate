@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-publish:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     env:
       DOCKERFILE: Dockerfile
       PROJECT: Application/Application.csproj
