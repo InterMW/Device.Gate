@@ -32,6 +32,9 @@ jobs:
         RABBIT_USER : ${{secrets.RABBIT_USER}}
         RABBIT_PASSWORD : ${{secrets.RABBIT_PASSWORD}}
         ONPREM_REDIS : ${{secrets.ONPREM_REDIS}}
+        MQTT_USER : ${{secrets.MQTT_USER}}
+        MQTT_PASS : ${{secrets.MQTT_PASS}}
+        MQTT_HOST : ${{secrets.MQTT_HOST}}
      - 
       name: Replace Appsettings
       run: cp ${{env.REPLACESETTINGS}} ${{env.APPSETTINGS}}
