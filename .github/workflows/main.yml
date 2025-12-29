@@ -70,7 +70,7 @@ jobs:
               ${{secrets.DOCKER_HOST}}/${{env.TAG}}
   deploy:
     needs: build-publish
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       TAG: devicegate
     steps:
@@ -78,7 +78,7 @@ jobs:
     # uses: nekiro/ssh-job@e0d177751aced5bcaf110ce4d782a681e5e12856
        uses: nekiro/ssh-job@v1.0.5
        with:
-        command:  docker pull ${{secrets.DOCKER_HOST}}/${{env.TAG}}; docker stop ${{env.TAG}}; docker rm ${{env.TAG}}; docker run --name ${{env.TAG}} --restart=unless-stopped --net inter_network -m=500m --dns=10.0.0.33 -d ${{secrets.DOCKER_HOST}}/${{env.TAG}}; 
+        command:  docker pull ${{secrets.DOCKER_HOST}}/${{env.TAG}}; docker stop ${{env.TAG}}; docker rm ${{env.TAG}}; docker run --name ${{env.TAG}} --restart=unless-stopped --net inter_network -m=500m -d ${{secrets.DOCKER_HOST}}/${{env.TAG}}; 
         host: ${{secrets.HOST}}
         user: ${{secrets.CENTURION_USERNAME}}
         password: ${{secrets.CENTURION_PASSWORD}}
