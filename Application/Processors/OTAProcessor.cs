@@ -11,17 +11,26 @@ public class OTAProcessor(MqttClientOptions clientOptions) : BackgroundService
         Console.WriteLine("We got there");
         await mqttClient.ConnectAsync(clientOptions, CancellationToken.None);
 
-        var mqttSubscribeOptions = mqttFactory.CreateSubscribeOptionsBuilder().WithTopicFilter("ota.check").Build();
+        var mqttSubscribeOptions = mqttFactory.CreateSubscribeOptionsBuilder().WithTopicFilter("device/+").Build();
         mqttClient.ApplicationMessageReceivedAsync += async e =>
         {
-            Console.WriteLine($"Received application message. {e.ApplicationMessage.ConvertPayloadToString()}");
-            await Task.CompletedTask;
-            var payload = e.ApplicationMessage.ConvertPayloadToString();
             var mess = new MqttApplicationMessageBuilder();
-            Console.WriteLine($"sending to ota.{payload}.ok");
-            mess.WithPayload("Good");
-            mess.WithTopic($"ota.{payload}.ok");
-            var res = await mqttClient.PublishAsync(mess.Build());
+            Console.WriteLine($"Received application message. {e.ApplicationMessage.ConvertPayloadToString()}");
+            Console.WriteLine($"  Received message on {e.ApplicationMessage.Topic}");
+            Console.WriteLine($"  {DateTime.UtcNow}");
+            var payload = e.ApplicationMessage.ConvertPayloadToString();
+            switch(e.ApplicationMessage.Topic)
+            {
+                case "device/check":
+                    Console.WriteLine($"sending to {payload}");
+                    mess.WithPayload("ota_good");
+                    mess.WithTopic("out/"+payload);
+                    var res = await mqttClient.PublishAsync(mess.Build());
+                    return;
+                case "device/died":
+                    Console.WriteLine($"{payload} disconnected");
+                    return;
+            }
         };
         await mqttClient.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None);
         await Task.Delay(Timeout.Infinite, stoppingToken);
