@@ -11,7 +11,7 @@ public class OTAProcessor(MqttClientOptions clientOptions) : BackgroundService
         Console.WriteLine("We got there");
         await mqttClient.ConnectAsync(clientOptions, CancellationToken.None);
 
-        var mqttSubscribeOptions = mqttFactory.CreateSubscribeOptionsBuilder().WithTopicFilter("device/+").Build();
+        var mqttSubscribeOptions = mqttFactory.CreateSubscribeOptionsBuilder().WithTopicFilter("fromdevice/+").Build();
         mqttClient.ApplicationMessageReceivedAsync += async e =>
         {
             var mess = new MqttApplicationMessageBuilder();
@@ -21,13 +21,13 @@ public class OTAProcessor(MqttClientOptions clientOptions) : BackgroundService
             var payload = e.ApplicationMessage.ConvertPayloadToString();
             switch(e.ApplicationMessage.Topic)
             {
-                case "device/check":
+                case "fromdevice/check":
                     Console.WriteLine($"sending to {payload}");
                     mess.WithPayload("ota_good");
-                    mess.WithTopic("out/"+payload);
+                    mess.WithTopic("todevice/"+payload);
                     var res = await mqttClient.PublishAsync(mess.Build());
                     return;
-                case "device/died":
+                case "fromdevice/died":
                     Console.WriteLine($"{payload} disconnected");
                     return;
             }
