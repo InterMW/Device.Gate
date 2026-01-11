@@ -1,6 +1,5 @@
 using Application.Configuration;
 using Application.Processors;
-using Device.GrpcClient;
 using DomainService;
 using Infrastructure.Rabbit;
 using Infrastructure.Redis;
@@ -18,8 +17,8 @@ public class AppRegistrator : Registrator
     {
         // RabbitModule.RegisterMicroConsumer<PlaneProcessor,TestMessage>(services, false);
         // RabbitModule.RegisterMicroConsumer<UsageProcessor,UsageMessage>(services, false);
-        // RabbitModule.RegisterPublisher<HeartbeatMessage>(services);
-        // services.AddTransient<IHeartbeatPublisher,HeartbeatPublisher>();
+        RabbitModule.RegisterPublisher<PlaneFrameMessage>(services);
+        services.AddTransient<IPlaneFramePublisher,PlaneFramePublisher>();
         // services.AddTransient<ITranslatorDomainService,TranslatorDomainService>();
         // DeviceGrpcDependencyModule.RegisterClient(services);
         // RedisDependencyModule.LoadRedisRepository<INodeCacheRepository,NodeCacheRepository, NodeCacheContext>(services);
