@@ -51,10 +51,12 @@ public class OTAProcessor(MqttClientOptions clientOptions, IPlaneFramePublisher 
                     return;
             }
         };
-        await mqttClient.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None);
-        while(mqttClient.IsConnected)
+
+        await mqttClient.SubscribeAsync(mqttSubscribeOptions, stoppingToken);
+
+        while(mqttClient.IsConnected && !stoppingToken.IsCancellationRequested)
         {
-            await Task.Delay(TimeSpan.FromSeconds(10));
+            await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
         }
 
         Environment.Exit(-1);
